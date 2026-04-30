@@ -21,9 +21,10 @@
 
         .card { background: white; max-width: 500px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         
-        /* Imagen pequeña junto al título */
+        /* Encabezado con imagen pequeña y texto del sorteo */
         .header-rifa { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
-        .img-icono { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--dorado); }
+        .img-icono { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--dorado); }
+        .sorteo-info { font-size: 13px; color: #444; font-weight: bold; line-height: 1.2; text-align: left; }
         
         img.principal { width: 100%; border-radius: 15px; margin: 15px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         h1 { color: var(--dorado); margin: 0; font-size: 24px; }
@@ -55,16 +56,19 @@
 <div class="card">
     <h1>tucuadro.madre 🎨</h1>
     
-    <!-- Encabezado con imagen pequeña -->
+    <!-- Encabezado actualizado con el icono de Sinuano -->
     <div class="header-rifa">
-        <img src="https://i.pinimg.com/736x/3f/3a/9c/3f3a9c3ff7bd66efe159c4bbf14d8893.jpg" class="img-icono" alt="Icono">
-        <p style="margin: 0; font-weight: bold; color: #444;"> - 09/05/2026</p>
+        <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-icono" alt="Sinuano Icono">
+        <div class="sorteo-info">
+            Juega el 09/05/2026<br>
+            Con las 2 últimas cifras del Sinuano Noche
+        </div>
     </div>
 
     <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal" alt="Cuadro Principal">
     
     <div class="precio">Valor Boleta: $10.000</div>
-    <p style="font-size: 14px;">Toca un número disponible para comprar:</p>
+    <p style="font-size: 14px; color: #555;">Selecciona el número que te dará la suerte:</p>
     
     <div id="tablero" class="grid"></div>
 </div>
@@ -81,9 +85,8 @@
         <label>Tu WhatsApp / Celular:</label>
         <input type="tel" id="telefono" placeholder="Ej: 300 000 0000">
         
-        <label>Nombre de quien te vendió:</label>
-        <!-- Ahora es un INPUT de texto, no un SELECT -->
-        <input type="text" id="vendedor" placeholder="Ej: Instagram, Pedro, Maria...">
+        <label>Vendido por:</label>
+        <input type="text" id="vendedor" placeholder="Ej: Pedro, María, Instagram...">
 
         <button class="btn-confirmar" onclick="enviarWhatsApp()">LISTO, PAGAR POR NEQUI</button>
     </div>
@@ -97,12 +100,10 @@
     const musica = document.getElementById('musicaRifa');
     let seleccionado = null;
 
-    // Activa música al interactuar
     document.addEventListener('click', () => { 
         musica.play().catch(e => {}); 
     }, { once: true });
 
-    // Animación de rosas
     function createRoses() {
         const containers = [document.getElementById('rosesLeft'), document.getElementById('rosesRight')];
         containers.forEach(container => {
@@ -118,7 +119,7 @@
     }
 
     async function cargarRifa() {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx:out:json`;
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
         try {
             const res = await fetch(url);
             const text = await res.text();
@@ -162,11 +163,11 @@
         const vend = document.getElementById('vendedor').value;
 
         if(!nombre || !tel || !vend) {
-            alert("Por favor completa todos los campos para continuar");
+            alert("Por favor completa todos los campos");
             return;
         }
 
-        const msg = `¡Hola tucuadro.madre! 🎨%0A%0AQuiero la boleta: *#${seleccionado}*%0A%0A*Información del Comprador:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0AYa voy a realizar el pago de *$10.000* por Nequi.`;
+        const msg = `¡Hola tucuadro.madre! 🎨%0A%0AQuiero la boleta: *#${seleccionado}*%0A%0A*Datos del Comprador:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026)%0AYa voy a realizar el pago de *$10.000* por Nequi.`;
         
         window.open(`https://wa.me/${MI_WHATSAPP}?text=${msg}`, '_blank');
         cerrarModal();
