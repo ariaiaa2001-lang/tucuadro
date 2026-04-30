@@ -3,38 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Rifa Día de las Madres | tucuadro.madre</title>
-    <meta property="og:title" content="Rifa Día de las Madres">
-    <meta property="og:image" content="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg">
-    <meta property="og:description" content="Gana un cuadro decorativo hecho a mano. Boleta a $10.000">
-
     <style>
         :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
-        
-        /* Rosas en los bordes */
         .rose-container { position: fixed; top: 0; width: 60px; height: 100%; pointer-events: none; z-index: 999; }
         .roses-left { left: 0; } .roses-right { right: 0; }
         .rose { position: absolute; font-size: 20px; animation: fall linear infinite; opacity: 0; }
         @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-
         .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
-        
-        /* Imagen del Sinuano centrada y normal */
         .img-sinuano { width: 120px; height: auto; margin-bottom: 5px; }
         .sorteo-texto { font-size: 14px; color: #333; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
-        
         img.principal { width: 100%; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
         .precio { font-size: 26px; color: var(--verde); font-weight: bold; margin: 10px 0; }
-        
-        /* Grilla de números */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
         .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.2s; }
         .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; opacity: 0.7; }
         .n.selected { background: var(--dorado); color: white; transform: scale(1.05); border-color: var(--dorado); }
-
-        /* Modal */
         #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: left; }
         .modal-content h3 { color: var(--rosa-nequi); margin-top: 0; text-align: center; }
@@ -52,18 +37,11 @@
 <div class="rose-container roses-right" id="rosesRight"></div>
 
 <div class="card">
-    <!-- Encabezado Limpio -->
     <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-sinuano" alt="Sinuano">
-    <div class="sorteo-texto">
-        Juega el 09/05/2026 con las 2 últimas cifras<br>del Sinuano Noche
-    </div>
-
-    <!-- Imagen del Premio -->
+    <div class="sorteo-texto">Juega el 09/05/2026 con las 2 últimas cifras<br>del Sinuano Noche</div>
     <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal" alt="Premio Cuadro">
-    
     <div class="precio">Valor Boleta: $10.000</div>
     <p style="font-size: 14px; color: #666; margin: 0;">Selecciona el número que te dará la suerte:</p>
-    
     <div id="tablero" class="grid"></div>
 </div>
 
@@ -72,11 +50,11 @@
         <button class="btn-cerrar" onclick="cerrarModal()">×</button>
         <h3 id="tituloBoleta">Boleta #--</h3>
         <label>Nombre Completo:</label>
-        <input type="text" id="nombre" placeholder="Tu nombre">
+        <input type="text" id="nombreInput" placeholder="Tu nombre">
         <label>WhatsApp:</label>
-        <input type="tel" id="telefono" placeholder="Tu número">
+        <input type="tel" id="telefonoInput" placeholder="Tu número">
         <label>Vendido por:</label>
-        <input type="text" id="vendedor" placeholder="Nombre del vendedor">
+        <input type="text" id="vendedorInput" placeholder="Nombre del vendedor">
         <button class="btn-confirmar" onclick="enviarWhatsApp()">PAGAR POR NEQUI</button>
     </div>
 </div>
@@ -113,7 +91,6 @@
             const json = JSON.parse(text.substr(47).slice(0, -2));
             const filas = json.table.rows;
             tablero.innerHTML = '';
-
             for (let i = 0; i < 100; i++) {
                 const nStr = i.toString().padStart(2, '0');
                 const div = document.createElement('div');
@@ -138,11 +115,18 @@
     function cerrarModal() { modal.style.display = 'none'; }
 
     function enviarWhatsApp() {
-        const nombre = document.getElementById('nombre').value;
-        const tel = document.getElementById('telefono').value;
-        const vend = document.getElementById('vendedor').value;
-        if(!nombre || !tel || !vend) { alert("Llena todos los campos"); return; }
-        const msg = `¡Hola! Quiero la boleta: *#${seleccionado}*%0A%0A*Datos:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026). Pago *$10.000* por Nequi.`;
+        // Captura de datos corregida
+        const nombre = document.getElementById('nombreInput').value;
+        const tel = document.getElementById('telefonoInput').value;
+        const vend = document.getElementById('vendedorInput').value;
+
+        if(!nombre || !tel || !vend) { 
+            alert("Por favor, llena todos los campos antes de pagar."); 
+            return; 
+        }
+
+        const msg = `¡Hola tucuadro.madre! 🎨%0A%0AQuiero la boleta: *#${seleccionado}*%0A%0A*Datos del Comprador:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026).%0AYa voy a realizar el pago de *$10.000* por Nequi.`;
+        
         window.open(`https://wa.me/${MI_WHATSAPP}?text=${msg}`, '_blank');
         cerrarModal();
     }
