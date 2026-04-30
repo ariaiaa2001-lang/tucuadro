@@ -14,7 +14,6 @@
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
         .n { padding: 12px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; }
-        .n.selected { background: var(--dorado); color: white; }
         #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; max-width: 320px; text-align: left; }
         .modal-content input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
@@ -45,13 +44,11 @@
 </div>
 
 <script>
-    // ID extraído de tu captura de pantalla
     const SHEET_ID = '12fOsLyGGJuNJ4qwmHDIz3gDQ6yScFyowk6s-E_OPexQ'; 
     const WHATSAPP_NUM = "573004359786";
     let nSeleccionado = "";
 
     async function cargarNumeros() {
-        // Usamos la URL de exportación CSV que es más directa y falla menos
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
         
         try {
@@ -79,34 +76,40 @@
                 tablero.appendChild(div);
             }
         } catch (e) {
-            document.getElementById('tablero').innerHTML = "Error: Por favor verifica que el archivo esté 'Publicado en la web'.";
+            document.getElementById('tablero').innerHTML = "Error: verifica que el Google Sheet esté publicado en la web.";
         }
     }
 
     function enviarWhatsApp() {
-        const nom = document.getElementById('inpNombre').value;
-        const tel = document.getElementById('inpTel').value;
-        const ven = document.getElementById('inpVend').value;
+        const nom = document.getElementById('inpNombre').value.trim();
+        const tel = document.getElementById('inpTel').value.trim();
+        const ven = document.getElementById('inpVend').value.trim();
 
         if (!nom || !tel || !ven) {
             alert("Completa todos los datos");
             return;
         }
 
-        // Creamos el mensaje asegurando que los datos se lean en el momento del click
-        const texto = `¡Hola tucuadro.madre! 🎨%0A%0A` +
-                      `Quiero la boleta: *#${nSeleccionado}*%0A%0A` +
-                      `*Datos:*%0A` +
-                      `- Nombre: ${nom}%0A` +
-                      `- WhatsApp: ${tel}%0A` +
-                      `- Vendedor: ${ven}%0A%0A` +
-                      `Sorteo: Sinuano Noche (09/05/2026). Pago $10.000 por Nequi.`;
+        const texto = `🎟️ *RIFA DÍA DE LAS MADRES* 🎟️
 
-        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${texto}`, '_blank');
+Hola! Quiero la boleta *#${nSeleccionado}*
+
+👤 Nombre: ${nom}
+📱 WhatsApp: ${tel}
+🧑‍💼 Vendedor: ${ven}
+
+💰 Valor: $10.000
+📅 Sorteo: 09/05/2026 - Sinuano Noche
+💳 Pago por Nequi`;
+
+        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(texto)}`;
+
+        window.open(url, '_blank');
         document.getElementById('modal-pago').style.display = 'none';
     }
 
     cargarNumeros();
 </script>
+
 </body>
 </html>
