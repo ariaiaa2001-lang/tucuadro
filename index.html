@@ -4,46 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>tucuadro.madre | Rifa Relámpago</title>
-    <meta property="og:title" content="Dia de la Madre">
+    <title>Rifa Día de las Madres | tucuadro.madre</title>
+    <meta property="og:title" content="Rifa Día de las Madres">
     <meta property="og:image" content="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg">
-    <meta property="og:description" content="Selecciona tu número y gana. Boleta a $10.000">
+    <meta property="og:description" content="Gana un cuadro decorativo hecho a mano. Boleta a $10.000">
 
     <style>
         :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 15px; text-align: center; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
         
         /* Rosas en los bordes */
-        .rose-container { position: fixed; top: 0; width: 80px; height: 100%; pointer-events: none; z-index: 999; }
+        .rose-container { position: fixed; top: 0; width: 60px; height: 100%; pointer-events: none; z-index: 999; }
         .roses-left { left: 0; } .roses-right { right: 0; }
-        .rose { position: absolute; font-size: 25px; animation: fall linear infinite; opacity: 0; }
+        .rose { position: absolute; font-size: 20px; animation: fall linear infinite; opacity: 0; }
         @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
 
-        .card { background: white; max-width: 500px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
+        .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         
-        /* Encabezado con imagen pequeña y texto del sorteo */
-        .header-rifa { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
-        .img-icono { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--dorado); }
-        .sorteo-info { font-size: 13px; color: #444; font-weight: bold; line-height: 1.2; text-align: left; }
+        /* Imagen del Sinuano centrada y normal */
+        .img-sinuano { width: 120px; height: auto; margin-bottom: 5px; }
+        .sorteo-texto { font-size: 14px; color: #333; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
         
-        img.principal { width: 100%; border-radius: 15px; margin: 15px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        h1 { color: var(--dorado); margin: 0; font-size: 24px; }
-        .precio { font-size: 24px; color: var(--verde); font-weight: bold; margin: 10px 0; }
+        img.principal { width: 100%; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .precio { font-size: 26px; color: var(--verde); font-weight: bold; margin: 10px 0; }
         
-        /* Grilla */
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-        .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.3s; }
-        .n.vendido { background: #ffcccc; color: #cc0000; border-color: #ffaaaa; cursor: not-allowed; opacity: 0.6; }
-        .n.selected { background: var(--dorado); color: white; transform: scale(1.05); }
+        /* Grilla de números */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
+        .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.2s; }
+        .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; opacity: 0.7; }
+        .n.selected { background: var(--dorado); color: white; transform: scale(1.05); border-color: var(--dorado); }
 
-        /* Formulario Flotante */
+        /* Modal */
         #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: left; }
         .modal-content h3 { color: var(--rosa-nequi); margin-top: 0; text-align: center; }
-        .modal-content label { display: block; font-size: 14px; color: #666; margin-bottom: 5px; font-weight: bold; }
+        .modal-content label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .btn-confirmar { width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-cerrar { background: none; border: none; color: #999; float: right; font-size: 24px; cursor: pointer; line-height: 1; }
+        .btn-cerrar { background: none; border: none; color: #999; float: right; font-size: 24px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -54,41 +52,32 @@
 <div class="rose-container roses-right" id="rosesRight"></div>
 
 <div class="card">
-    <h1>tucuadro.madre 🎨</h1>
-    
-    <!-- Encabezado actualizado con el icono de Sinuano -->
-    <div class="header-rifa">
-        <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-icono" alt="Sinuano Icono">
-        <div class="sorteo-info">
-            Juega el 09/05/2026<br>
-            Con las 2 últimas cifras del Sinuano Noche
-        </div>
+    <!-- Encabezado Limpio -->
+    <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-sinuano" alt="Sinuano">
+    <div class="sorteo-texto">
+        Juega el 09/05/2026 con las 2 últimas cifras<br>del Sinuano Noche
     </div>
 
-    <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal" alt="Cuadro Principal">
+    <!-- Imagen del Premio -->
+    <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal" alt="Premio Cuadro">
     
     <div class="precio">Valor Boleta: $10.000</div>
-    <p style="font-size: 14px; color: #555;">Selecciona el número que te dará la suerte:</p>
+    <p style="font-size: 14px; color: #666; margin: 0;">Selecciona el número que te dará la suerte:</p>
     
     <div id="tablero" class="grid"></div>
 </div>
 
-<!-- FORMULARIO DE DATOS -->
 <div id="modal-pago">
     <div class="modal-content">
         <button class="btn-cerrar" onclick="cerrarModal()">×</button>
         <h3 id="tituloBoleta">Boleta #--</h3>
-        
-        <label>Tu Nombre Completo:</label>
-        <input type="text" id="nombre" placeholder="Ej: Juan Pérez">
-        
-        <label>Tu WhatsApp / Celular:</label>
-        <input type="tel" id="telefono" placeholder="Ej: 300 000 0000">
-        
+        <label>Nombre Completo:</label>
+        <input type="text" id="nombre" placeholder="Tu nombre">
+        <label>WhatsApp:</label>
+        <input type="tel" id="telefono" placeholder="Tu número">
         <label>Vendido por:</label>
-        <input type="text" id="vendedor" placeholder="Ej: Pedro, María, Instagram...">
-
-        <button class="btn-confirmar" onclick="enviarWhatsApp()">LISTO, PAGAR POR NEQUI</button>
+        <input type="text" id="vendedor" placeholder="Nombre del vendedor">
+        <button class="btn-confirmar" onclick="enviarWhatsApp()">PAGAR POR NEQUI</button>
     </div>
 </div>
 
@@ -100,14 +89,12 @@
     const musica = document.getElementById('musicaRifa');
     let seleccionado = null;
 
-    document.addEventListener('click', () => { 
-        musica.play().catch(e => {}); 
-    }, { once: true });
+    document.addEventListener('click', () => { musica.play().catch(e => {}); }, { once: true });
 
     function createRoses() {
         const containers = [document.getElementById('rosesLeft'), document.getElementById('rosesRight')];
         containers.forEach(container => {
-            for(let i=0; i<12; i++) {
+            for(let i=0; i<10; i++) {
                 let rose = document.createElement('div');
                 rose.className = 'rose'; rose.innerText = '🌹';
                 rose.style.left = Math.random() * 100 + '%';
@@ -131,22 +118,15 @@
                 const nStr = i.toString().padStart(2, '0');
                 const div = document.createElement('div');
                 let esVendido = false;
-                
                 if (filas[i + 1] && filas[i + 1].c && filas[i + 1].c[1] && filas[i + 1].c[1].v) {
                     if (filas[i + 1].c[1].v.toString().toLowerCase().includes('vendido')) esVendido = true;
                 }
-                
                 div.className = 'n' + (esVendido ? ' vendido' : '');
                 div.innerText = nStr;
-                
-                if (!esVendido) {
-                    div.onclick = () => abrirModal(nStr);
-                }
+                if (!esVendido) div.onclick = () => abrirModal(nStr);
                 tablero.appendChild(div);
             }
-        } catch (e) { 
-            tablero.innerHTML = "Error cargando números."; 
-        }
+        } catch (e) { tablero.innerHTML = "Error al cargar."; }
     }
 
     function abrirModal(numero) {
@@ -161,14 +141,8 @@
         const nombre = document.getElementById('nombre').value;
         const tel = document.getElementById('telefono').value;
         const vend = document.getElementById('vendedor').value;
-
-        if(!nombre || !tel || !vend) {
-            alert("Por favor completa todos los campos");
-            return;
-        }
-
-        const msg = `¡Hola tucuadro.madre! 🎨%0A%0AQuiero la boleta: *#${seleccionado}*%0A%0A*Datos del Comprador:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026)%0AYa voy a realizar el pago de *$10.000* por Nequi.`;
-        
+        if(!nombre || !tel || !vend) { alert("Llena todos los campos"); return; }
+        const msg = `¡Hola! Quiero la boleta: *#${seleccionado}*%0A%0A*Datos:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026). Pago *$10.000* por Nequi.`;
         window.open(`https://wa.me/${MI_WHATSAPP}?text=${msg}`, '_blank');
         cerrarModal();
     }
