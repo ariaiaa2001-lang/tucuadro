@@ -4,19 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Etiquetas para la vista previa de WhatsApp -->
+    <!-- Configuración para WhatsApp -->
     <title>tucuadro.madre | Rifa Relámpago</title>
     <meta name="description" content="¡Participa en nuestra rifa y gana un cuadro espectacular! Boletas a solo $10.000">
     <meta property="og:title" content="tucuadro.madre | Rifa Relámpago">
-    <meta property="og:description" content="Selecciona tu número y paga por Nequi al instante.">
+    <meta property="og:description" content="Selecciona tu número y gana. Boleta a $10.000">
     <meta property="og:image" content="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg">
     <meta property="og:url" content="https://ariaaa2001-lang.github.io/tucuardo/">
     <meta property="og:type" content="website">
 
     <style>
         :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 15px; text-align: center; }
-        .card { background: white; max-width: 500px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 15px; text-align: center; overflow-x: hidden; }
+        
+        /* Rosas en los bordes */
+        .rose-container { position: fixed; top: 0; width: 80px; height: 100%; pointer-events: none; z-index: 999; }
+        .roses-left { left: 0; }
+        .roses-right { right: 0; }
+        .rose { position: absolute; font-size: 25px; animation: fall linear infinite; opacity: 0; }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .card { background: white; max-width: 500px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         img { width: 100%; border-radius: 15px; margin: 15px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         h1 { color: var(--dorado); margin: 0; font-size: 28px; }
         .precio { font-size: 24px; color: var(--verde); font-weight: bold; margin: 10px 0; }
@@ -24,7 +36,7 @@
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; min-height: 200px; }
         .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 18px; }
         .n.vendido { background: #ffcccc; color: #cc0000; border-color: #ffaaaa; cursor: not-allowed; opacity: 0.6; }
-        .n.selected { background: var(--dorado); color: white; border-color: var(--dorado); transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .n.selected { background: var(--dorado); color: white; border-color: var(--dorado); transform: scale(1.05); }
         .btn-pago { display: none; width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; margin-top: 10px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         .loading { grid-column: span 5; padding: 40px; color: #999; font-style: italic; }
@@ -32,17 +44,26 @@
 </head>
 <body>
 
+<!-- Música -->
+<audio id="musicaRifa" loop>
+    <source src="https://raw.githubusercontent.com/ariaiaa2001-lang/tucuadro/main/Joe%20Arroyo%20-%20Mama.mp3" type="audio/mpeg">
+</audio>
+
+<div class="rose-container roses-left" id="rosesLeft"></div>
+<div class="rose-container roses-right" id="rosesRight"></div>
+
 <div class="card">
     <h1>tucuadro.madre 🎨</h1>
     <p>Rifa Relámpago - Juega el 09-05-2026</p>
     
-    <img src="https://i.pinimg.com/736x/e4/89/e2/e489e2a85e49bad8282fa80e740b4fd2.jpg" alt="Cuadro">
+    <!-- NUEVA IMAGEN PRINCIPAL -->
+    <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" alt="Cuadro Árbol de la Vida">
 
-    <div class="precio">Valor Boleta: <span>$15.000</span></div>
+    <div class="precio">Valor Boleta: <span>$10.000</span></div>
     <p class="instrucciones">Selecciona un número disponible para pagar por Nequi:</p>
 
     <div id="tablero" class="grid">
-        <div class="loading">Cargando números disponibles...</div>
+        <div class="loading">Cargando números...</div>
     </div>
 
     <button id="btnPagar" class="btn-pago" onclick="irANequi()">
@@ -53,11 +74,33 @@
 <script>
     const SHEET_ID = '12fOsLyGGJuNJ4qwmHDIz3gDQ6yScFyowk6s-E_OPexQ'; 
     const MI_WHATSAPP = "573004359786"; 
-    const PRECIO = "$10.000";
+    const PRECIO_TEXTO = "$10.000"; // ACTUALIZADO
 
     const tablero = document.getElementById('tablero');
     const btn = document.getElementById('btnPagar');
+    const musica = document.getElementById('musicaRifa');
     let seleccionado = null;
+
+    // Música al interactuar[cite: 3]
+    document.addEventListener('click', () => {
+        musica.play().catch(e => console.log("Esperando clic para sonar"));
+    }, { once: true });
+
+    // Cascada de rosas laterales[cite: 3]
+    function createRoses() {
+        const containers = [document.getElementById('rosesLeft'), document.getElementById('rosesRight')];
+        containers.forEach(container => {
+            for(let i=0; i<15; i++) {
+                let rose = document.createElement('div');
+                rose.className = 'rose';
+                rose.innerText = '🌹';
+                rose.style.left = Math.random() * 100 + '%';
+                rose.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                rose.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(rose);
+            }
+        });
+    }
 
     async function cargarRifa() {
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
@@ -66,13 +109,14 @@
             const text = await res.text();
             const json = JSON.parse(text.substr(47).slice(0, -2));
             const filas = json.table.rows;
-            tablero.innerHTML = ''; 
+            tablero.innerHTML = '';
 
             for (let i = 0; i < 100; i++) {
                 const nStr = i.toString().padStart(2, '0');
                 const div = document.createElement('div');
                 
                 let esVendido = false;
+                // Verificación de nulos para evitar errores de carga[cite: 3]
                 if (filas[i + 1] && filas[i + 1].c && filas[i + 1].c[1] && filas[i + 1].c[1].v) {
                     if (filas[i + 1].c[1].v.toString().toLowerCase().includes('vendido')) {
                         esVendido = true;
@@ -89,6 +133,7 @@
                         seleccionado = nStr;
                         btn.style.display = 'block';
                         btn.innerText = `PAGAR BOLETA #${nStr} POR NEQUI`;
+                        // Scroll automático al botón[cite: 3]
                         btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     };
                 }
@@ -101,10 +146,11 @@
 
     function irANequi() {
         if (!seleccionado) return;
-        const msg = `¡Hola! Quiero la boleta #${seleccionado} de tucuadro.madre. Ya voy a realizar el pago de ${PRECIO} por Nequi.`;
+        const msg = `¡Hola! Quiero la boleta #${seleccionado} de tucuadro.madre. Ya voy a realizar el pago de ${PRECIO_TEXTO} por Nequi.`;
         window.open(`https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
+    createRoses();
     cargarRifa();
 </script>
 
