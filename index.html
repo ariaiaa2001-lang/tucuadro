@@ -49,12 +49,16 @@
     <div class="modal-content">
         <button class="btn-cerrar" onclick="cerrarModal()">×</button>
         <h3 id="tituloBoleta">Boleta #--</h3>
+        
         <label>Nombre Completo:</label>
-        <input type="text" id="nombreInput" placeholder="Tu nombre">
+        <input type="text" id="nombreC" placeholder="Tu nombre">
+        
         <label>WhatsApp:</label>
-        <input type="tel" id="telefonoInput" placeholder="Tu número">
+        <input type="tel" id="telC" placeholder="Tu número">
+        
         <label>Vendido por:</label>
-        <input type="text" id="vendedorInput" placeholder="Nombre del vendedor">
+        <input type="text" id="vendC" placeholder="Nombre del vendedor">
+        
         <button class="btn-confirmar" onclick="enviarWhatsApp()">PAGAR POR NEQUI</button>
     </div>
 </div>
@@ -115,19 +119,27 @@
     function cerrarModal() { modal.style.display = 'none'; }
 
     function enviarWhatsApp() {
-        // Captura de datos corregida
-        const nombre = document.getElementById('nombreInput').value;
-        const tel = document.getElementById('telefonoInput').value;
-        const vend = document.getElementById('vendedorInput').value;
+        // CORRECCIÓN CLAVE: Capturamos los valores justo al hacer click en el botón
+        const n = document.getElementById('nombreC').value;
+        const t = document.getElementById('telC').value;
+        const v = document.getElementById('vendC').value;
 
-        if(!nombre || !tel || !vend) { 
-            alert("Por favor, llena todos los campos antes de pagar."); 
+        if(!n || !t || !v) { 
+            alert("Por favor, llena todos los campos"); 
             return; 
         }
 
-        const msg = `¡Hola tucuadro.madre! 🎨%0A%0AQuiero la boleta: *#${seleccionado}*%0A%0A*Datos del Comprador:*%0A- Nombre: ${nombre}%0A- Celular: ${tel}%0A- Vendedor: ${vend}%0A%0ASorteo: Sinuano Noche (09/05/2026).%0AYa voy a realizar el pago de *$10.000* por Nequi.`;
+        // Armamos el mensaje final con los datos reales
+        const msg = "¡Hola tucuadro.madre! 🎨%0A%0A" + 
+                    "Quiero la boleta: *#" + seleccionado + "*%0A%0A" +
+                    "*Datos del Comprador:*%0A" +
+                    "- Nombre: " + n + "%0A" +
+                    "- Celular: " + t + "%0A" +
+                    "- Vendedor: " + v + "%0A%0A" +
+                    "Sorteo: Sinuano Noche (09/05/2026).%0A" +
+                    "Valor: *$10.000*";
         
-        window.open(`https://wa.me/${MI_WHATSAPP}?text=${msg}`, '_blank');
+        window.open("https://wa.me/" + MI_WHATSAPP + "?text=" + msg, "_blank");
         cerrarModal();
     }
 
