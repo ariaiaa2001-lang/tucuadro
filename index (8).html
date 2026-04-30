@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tucuadro.madre | Rifa Relámpago</title>
+    <style>
+        :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 15px; text-align: center; }
+        .card { background: white; max-width: 500px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 15px; margin: 15px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        h1 { color: var(--dorado); margin: 0; font-size: 28px; }
+        .precio { font-size: 24px; color: var(--verde); font-weight: bold; margin: 10px 0; }
+        .instrucciones { font-size: 14px; color: #666; margin-bottom: 20px; }
+        
+        /* Grilla de números */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; min-height: 200px; }
+        .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 18px; }
+        .n.vendido { background: #ffcccc; color: #cc0000; border-color: #ffaaaa; cursor: not-allowed; opacity: 0.7; }
+        .n.selected { background: var(--dorado); color: white; border-color: var(--dorado); transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Botón de Pago */
+        .btn-pago { display: none; width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        .loading { grid-column: span 5; padding: 40px; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>tucuadro.madre 🎨</h1>
+    <p>Rifa Relámpago - Juega el 09-05-2026</p>
+    
+    <!-- Imagen del cuadro -->
+    <img src="https://i.pinimg.com/736x/e4/89/e2/e489e2a85e49bad8282fa80e740b4fd2.jpg" alt="Cuadro Árbol de la Vida">
+
+    <div class="precio">Valor Boleta: <span id="val-precio">$15.000</span></div>
+    <p class="instrucciones">Selecciona un número disponible para pagar por Nequi:</p>
+
+    <div id="tablero" class="grid">
+        <div class="loading">Cargando boletas disponibles...</div>
+    </div>
+
+    <button id="btnPagar" class="btn-pago" onclick="irANequi()">
+        PAGAR POR NEQUI
+    </button>
+</div>
+
+<script>
+    // ==========================================
+    // CONFIGURACIÓN CONECTADA A TU SHEET
+    // ==========================================
+    const SHEET_ID = '12fOsLyGGJuNJ4qwmHDIz3gDQ6yScFyowk6s-E_OPexQ'; 
+    const PRECIO_MOSTRAR = "$15.000"; 
+    const MI_WHATSAPP = "573004359786"; 
+    // ==========================================
+
+    const btn = document.getElementById('btnPagar');
+    const tablero = document.getElementById('tablero');
+    let seleccionado = null;
+
+    async function obtenerDatosSheet() {
+        // Usamos la visualización de visualización de datos de Google para obtener JSON
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Hoja%201`;
+        
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            // Limpiar el formato de Google para obtener JSON puro
+            const json = JSON.parse(text.substr(47).slice(0, -2));
+            const filas = json.table.rows;
+            
+            tablero.innerHTML = ''; // Limpiar cargando
+
+            // Empezamos desde i=0 hasta 99 (total 100 números)
+            // En el Sheet, el número 00 está en la fila 2 (índice 1 de filas)
+            for (let i = 0; i < 100; i++) {
+                const nStr = i.toString().padStart(2, '0');
+                const div = document.createElement('div');
+                
+                // Revisar la columna B (Estado) del Sheet
+                // filas[i+1] porque la fila 0 del JSON es el encabezado "Numero | Estado"
+                const datoFila = filas[i + 1];
+                const estado = (datoFila && datoFila.c[1]) ? datoFila.c[1].v.toString().toLowerCase() : '';
+                const esVendido = estado.includes('vendido');
+
+                div.className = 'n' + (esVendido ? ' vendido' : '');
+                div.innerText = nStr;
+
+                if (!esVendido) {
+                    div.onclick = () => {
+                        document.querySelectorAll('.n').forEach(el => el.classList.remove('selected'));
+                        div.classList.add('selected');
+                        seleccionado = nStr;
+                        btn.style.display = 'block';
+                        btn.innerText = `PAGAR BOLETA #${nStr} POR NEQUI`;
+                    };
+                }
+
+                tablero.appendChild(div);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            tablero.innerHTML = '<div class="loading">Error al conectar con Google Sheets. Asegúrate de que esté "Publicado en la web".</div>';
+        }
+    }
+
+    function irANequi() {
+        if (!seleccionado) return;
+        const msg = `¡Hola! Quiero la boleta #${seleccionado} de tucuadro.madre. Ya voy a realizar el pago de ${PRECIO_MOSTRAR} por Nequi.`;
+        const urlWa = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(urlWa, '_blank');
+    }
+
+    // Ejecutar al cargar la página
+    obtenerDatosSheet();
+</script>
+
+</body>
+</html>
