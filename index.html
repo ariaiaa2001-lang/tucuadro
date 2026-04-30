@@ -6,21 +6,38 @@
     <title>Rifa Día de las Madres</title>
     <style>
         :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; }
-        .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
+        
+        /* Estilos de las rosas que caen */
+        .rose-container { position: fixed; top: 0; width: 60px; height: 100%; pointer-events: none; z-index: 999; }
+        .roses-left { left: 0; } .roses-right { right: 0; }
+        .rose { position: absolute; font-size: 20px; animation: fall linear infinite; opacity: 0; }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+
+        .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         .img-sinuano { width: 100px; margin-bottom: 10px; }
         img.principal { width: 100%; border-radius: 12px; margin-bottom: 15px; }
         .precio { font-size: 24px; color: var(--verde); font-weight: bold; margin: 10px 0; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
         .n { padding: 12px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; }
+        .n.selected { background: var(--dorado); color: white; }
+
         #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; max-width: 320px; text-align: left; }
         .modal-content input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .btn-enviar { width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-cerrar { background: none; border: none; color: #999; float: right; font-size: 24px; cursor: pointer; margin-top: -10px; }
     </style>
 </head>
 <body>
+
+<!-- Música integrada -->
+<audio id="musicaRifa" loop><source src="https://raw.githubusercontent.com/ariaiaa2001-lang/tucuadro/main/Joe%20Arroyo%20-%20Mama.mp3" type="audio/mpeg"></audio>
+
+<!-- Contenedores para las rosas -->
+<div class="rose-container roses-left" id="rosesLeft"></div>
+<div class="rose-container roses-right" id="rosesRight"></div>
 
 <div class="card">
     <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-sinuano">
@@ -32,6 +49,7 @@
 
 <div id="modal-pago">
     <div class="modal-content">
+        <button class="btn-cerrar" onclick="cerrarModal()">×</button>
         <h3 id="txtBoleta" style="text-align: center; color: var(--rosa-nequi);"></h3>
         <label>Nombre:</label>
         <input type="text" id="inpNombre">
@@ -46,16 +64,35 @@
 <script>
     const SHEET_ID = '12fOsLyGGJuNJ4qwmHDIz3gDQ6yScFyowk6s-E_OPexQ'; 
     const WHATSAPP_NUM = "573004359786";
+    const musica = document.getElementById('musicaRifa');
     let nSeleccionado = "";
+
+    // Iniciar música al primer toque
+    document.addEventListener('click', () => { 
+        musica.play().catch(e => console.log("Audio esperando interacción")); 
+    }, { once: true });
+
+    // Función para crear rosas
+    function createRoses() {
+        const containers = [document.getElementById('rosesLeft'), document.getElementById('rosesRight')];
+        containers.forEach(container => {
+            for(let i=0; i<10; i++) {
+                let rose = document.createElement('div');
+                rose.className = 'rose'; rose.innerText = '🌹';
+                rose.style.left = Math.random() * 100 + '%';
+                rose.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                rose.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(rose);
+            }
+        });
+    }
 
     async function cargarNumeros() {
         const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-        
         try {
             const resp = await fetch(url);
             const data = await resp.text();
             const filas = data.split('\n').map(f => f.split(','));
-            
             const tablero = document.getElementById('tablero');
             tablero.innerHTML = '';
 
@@ -76,8 +113,12 @@
                 tablero.appendChild(div);
             }
         } catch (e) {
-            document.getElementById('tablero').innerHTML = "Error: verifica que el Google Sheet esté publicado en la web.";
+            document.getElementById('tablero').innerHTML = "Error al cargar números.";
         }
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-pago').style.display = 'none';
     }
 
     function enviarWhatsApp() {
@@ -90,26 +131,14 @@
             return;
         }
 
-        const texto = `🎟️ *RIFA DÍA DE LAS MADRES* 🎟️
-
-Hola! Quiero la boleta *#${nSeleccionado}*
-
-👤 Nombre: ${nom}
-📱 WhatsApp: ${tel}
-🧑‍💼 Vendedor: ${ven}
-
-💰 Valor: $10.000
-📅 Sorteo: 09/05/2026 - Sinuano Noche
-💳 Pago por Nequi`;
-
+        const texto = `🎟️ *RIFA DÍA DE LAS MADRES* 🎟️\n\nHola! Quiero la boleta *#${nSeleccionado}*\n\n👤 Nombre: ${nom}\n📱 WhatsApp: ${tel}\n🧑‍💼 Vendedor: ${ven}\n\n💰 Valor: $10.000\n📅 Sorteo: 09/05/2026 - Sinuano Noche\n💳 Pago por Nequi`;
         const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(texto)}`;
-
         window.open(url, '_blank');
-        document.getElementById('modal-pago').style.display = 'none';
+        cerrarModal();
     }
 
+    createRoses();
     cargarNumeros();
 </script>
-
 </body>
 </html>
