@@ -3,148 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rifa Día de las Madres | tucuadro.madre</title>
+    <title>Rifa Día de las Madres</title>
     <style>
         :root { --dorado: #b8860b; --gris: #f4f4f4; --rosa-nequi: #da127d; --verde: #27ae60; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
-        .rose-container { position: fixed; top: 0; width: 60px; height: 100%; pointer-events: none; z-index: 999; }
-        .roses-left { left: 0; } .roses-right { right: 0; }
-        .rose { position: absolute; font-size: 20px; animation: fall linear infinite; opacity: 0; }
-        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-        .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 10; }
-        .img-sinuano { width: 120px; height: auto; margin-bottom: 5px; }
-        .sorteo-texto { font-size: 14px; color: #333; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
-        img.principal { width: 100%; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .precio { font-size: 26px; color: var(--verde); font-weight: bold; margin: 10px 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris); margin: 0; padding: 10px; text-align: center; }
+        .card { background: white; max-width: 500px; margin: 10px auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .img-sinuano { width: 100px; margin-bottom: 10px; }
+        img.principal { width: 100%; border-radius: 12px; margin-bottom: 15px; }
+        .precio { font-size: 24px; color: var(--verde); font-weight: bold; margin: 10px 0; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; }
-        .n { padding: 15px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.2s; }
-        .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; opacity: 0.7; }
-        .n.selected { background: var(--dorado); color: white; transform: scale(1.05); border-color: var(--dorado); }
-        #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: left; }
-        .modal-content h3 { color: var(--rosa-nequi); margin-top: 0; text-align: center; }
-        .modal-content label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
-        .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .btn-confirmar { width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-cerrar { background: none; border: none; color: #999; float: right; font-size: 24px; cursor: pointer; }
+        .n { padding: 12px 0; background: white; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .n.vendido { background: #fee2e2; color: #dc2626; border-color: #fecaca; cursor: not-allowed; }
+        .n.selected { background: var(--dorado); color: white; }
+        #modal-pago { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; max-width: 320px; text-align: left; }
+        .modal-content input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-enviar { width: 100%; background: var(--rosa-nequi); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<audio id="musicaRifa" loop><source src="https://raw.githubusercontent.com/ariaiaa2001-lang/tucuadro/main/Joe%20Arroyo%20-%20Mama.mp3" type="audio/mpeg"></audio>
-
-<div class="rose-container roses-left" id="rosesLeft"></div>
-<div class="rose-container roses-right" id="rosesRight"></div>
-
 <div class="card">
-    <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-sinuano" alt="Sinuano">
-    <div class="sorteo-texto">Juega el 09/05/2026 con las 2 últimas cifras<br>del Sinuano Noche</div>
-    <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal" alt="Premio Cuadro">
+    <img src="https://i.pinimg.com/736x/59/70/58/597058fc250c24e0d3ea6f051586710a.jpg" class="img-sinuano">
+    <div style="font-weight: bold; margin-bottom: 10px;">Sorteo 09/05/2026 - Sinuano Noche</div>
+    <img src="https://i.pinimg.com/736x/71/82/ed/7182ed29ffe4c5c4063837f14022b821.jpg" class="principal">
     <div class="precio">Valor Boleta: $10.000</div>
-    <p style="font-size: 14px; color: #666; margin: 0;">Selecciona el número que te dará la suerte:</p>
-    <div id="tablero" class="grid"></div>
+    <div id="tablero" class="grid">Cargando números...</div>
 </div>
 
 <div id="modal-pago">
     <div class="modal-content">
-        <button class="btn-cerrar" onclick="cerrarModal()">×</button>
-        <h3 id="tituloBoleta">Boleta #--</h3>
-        
-        <label>Nombre Completo:</label>
-        <input type="text" id="nombreC" placeholder="Tu nombre">
-        
+        <h3 id="txtBoleta" style="text-align: center; color: var(--rosa-nequi);"></h3>
+        <label>Nombre:</label>
+        <input type="text" id="inpNombre">
         <label>WhatsApp:</label>
-        <input type="tel" id="telC" placeholder="Tu número">
-        
-        <label>Vendido por:</label>
-        <input type="text" id="vendC" placeholder="Nombre del vendedor">
-        
-        <button class="btn-confirmar" onclick="enviarWhatsApp()">PAGAR POR NEQUI</button>
+        <input type="tel" id="inpTel">
+        <label>Vendedor:</label>
+        <input type="text" id="inpVend">
+        <button class="btn-enviar" onclick="enviarWhatsApp()">LISTO, ENVIAR PEDIDO</button>
     </div>
 </div>
 
 <script>
+    // ID extraído de tu captura de pantalla
     const SHEET_ID = '12fOsLyGGJuNJ4qwmHDIz3gDQ6yScFyowk6s-E_OPexQ'; 
-    const MI_WHATSAPP = "573004359786"; 
-    const tablero = document.getElementById('tablero');
-    const modal = document.getElementById('modal-pago');
-    const musica = document.getElementById('musicaRifa');
-    let seleccionado = null;
+    const WHATSAPP_NUM = "573004359786";
+    let nSeleccionado = "";
 
-    document.addEventListener('click', () => { musica.play().catch(e => {}); }, { once: true });
-
-    function createRoses() {
-        const containers = [document.getElementById('rosesLeft'), document.getElementById('rosesRight')];
-        containers.forEach(container => {
-            for(let i=0; i<10; i++) {
-                let rose = document.createElement('div');
-                rose.className = 'rose'; rose.innerText = '🌹';
-                rose.style.left = Math.random() * 100 + '%';
-                rose.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                rose.style.animationDelay = (Math.random() * 5) + 's';
-                container.appendChild(rose);
-            }
-        });
-    }
-
-    async function cargarRifa() {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    async function cargarNumeros() {
+        // Usamos la URL de exportación CSV que es más directa y falla menos
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+        
         try {
-            const res = await fetch(url);
-            const text = await res.text();
-            const json = JSON.parse(text.substr(47).slice(0, -2));
-            const filas = json.table.rows;
+            const resp = await fetch(url);
+            const data = await resp.text();
+            const filas = data.split('\n').map(f => f.split(','));
+            
+            const tablero = document.getElementById('tablero');
             tablero.innerHTML = '';
-            for (let i = 0; i < 100; i++) {
-                const nStr = i.toString().padStart(2, '0');
+
+            for (let i = 1; i <= 100; i++) {
+                const num = (i-1).toString().padStart(2, '0');
+                const estado = filas[i] ? filas[i][1].toLowerCase() : "";
                 const div = document.createElement('div');
-                let esVendido = false;
-                if (filas[i + 1] && filas[i + 1].c && filas[i + 1].c[1] && filas[i + 1].c[1].v) {
-                    if (filas[i + 1].c[1].v.toString().toLowerCase().includes('vendido')) esVendido = true;
+                div.className = 'n' + (estado.includes('vendido') ? ' vendido' : '');
+                div.innerText = num;
+                
+                if (!estado.includes('vendido')) {
+                    div.onclick = () => {
+                        nSeleccionado = num;
+                        document.getElementById('txtBoleta').innerText = "Comprar Boleta #" + num;
+                        document.getElementById('modal-pago').style.display = 'flex';
+                    };
                 }
-                div.className = 'n' + (esVendido ? ' vendido' : '');
-                div.innerText = nStr;
-                if (!esVendido) div.onclick = () => abrirModal(nStr);
                 tablero.appendChild(div);
             }
-        } catch (e) { tablero.innerHTML = "Error al cargar."; }
+        } catch (e) {
+            document.getElementById('tablero').innerHTML = "Error: Por favor verifica que el archivo esté 'Publicado en la web'.";
+        }
     }
-
-    function abrirModal(numero) {
-        seleccionado = numero;
-        document.getElementById('tituloBoleta').innerText = "Boleta #" + numero;
-        modal.style.display = 'flex';
-    }
-
-    function cerrarModal() { modal.style.display = 'none'; }
 
     function enviarWhatsApp() {
-        // CORRECCIÓN CLAVE: Capturamos los valores justo al hacer click en el botón
-        const n = document.getElementById('nombreC').value;
-        const t = document.getElementById('telC').value;
-        const v = document.getElementById('vendC').value;
+        const nom = document.getElementById('inpNombre').value;
+        const tel = document.getElementById('inpTel').value;
+        const ven = document.getElementById('inpVend').value;
 
-        if(!n || !t || !v) { 
-            alert("Por favor, llena todos los campos"); 
-            return; 
+        if (!nom || !tel || !ven) {
+            alert("Completa todos los datos");
+            return;
         }
 
-        // Armamos el mensaje final con los datos reales
-        const msg = "¡Hola tucuadro.madre! 🎨%0A%0A" + 
-                    "Quiero la boleta: *#" + seleccionado + "*%0A%0A" +
-                    "*Datos del Comprador:*%0A" +
-                    "- Nombre: " + n + "%0A" +
-                    "- Celular: " + t + "%0A" +
-                    "- Vendedor: " + v + "%0A%0A" +
-                    "Sorteo: Sinuano Noche (09/05/2026).%0A" +
-                    "Valor: *$10.000*";
-        
-        window.open("https://wa.me/" + MI_WHATSAPP + "?text=" + msg, "_blank");
-        cerrarModal();
+        // Creamos el mensaje asegurando que los datos se lean en el momento del click
+        const texto = `¡Hola tucuadro.madre! 🎨%0A%0A` +
+                      `Quiero la boleta: *#${nSeleccionado}*%0A%0A` +
+                      `*Datos:*%0A` +
+                      `- Nombre: ${nom}%0A` +
+                      `- WhatsApp: ${tel}%0A` +
+                      `- Vendedor: ${ven}%0A%0A` +
+                      `Sorteo: Sinuano Noche (09/05/2026). Pago $10.000 por Nequi.`;
+
+        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${texto}`, '_blank');
+        document.getElementById('modal-pago').style.display = 'none';
     }
 
-    createRoses();
-    cargarRifa();
+    cargarNumeros();
 </script>
 </body>
 </html>
